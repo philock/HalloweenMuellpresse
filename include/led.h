@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 
-#define LED_TIME_BASEUNIT 800
+#define LED_TIME_BASEUNIT 400
 
 enum LEDStates{
     ON, 

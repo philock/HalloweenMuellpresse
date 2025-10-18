@@ -97,15 +97,18 @@ void Wall::close(){
 }
 
 void Wall::reset(){
-    if(_interface.isGreen()) {
+    /* if(_interface.isGreen()) {
         Serial.println("INFO: Wall: Reset to state closed");
         _state = WallState::CLOSED;
     }
     else{
         Serial.println("INFO: Wall: Reset to state open");
         _state = WallState::OPEN;
-    }
+    } */
 
     errorLED.off();
     _interface.reset();
+
+    open();
+    _state = WallState::OPEN;
 }
