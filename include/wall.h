@@ -40,7 +40,7 @@ class Wall{
         WallState _state;
 
         unsigned long _t_start;
-        const unsigned long _drive_duration = 5000;
+        const unsigned long _drive_duration = 10000;
 
 
 };

@@ -72,6 +72,7 @@ void MotorInterface::state_close_wait_for_ack_start(){
     else if(millis() > _t_ack + _timeout){ // Timeout, too much time between trigger and LED turning off
         close_handle_nack();
         Serial.println("ERROR: Motor interface, state close_wait_start: Timeout while waiting red LED to turn off.");
+        errorLED.errCode(timeoutAckClosing, 3);
     }
 }
 
@@ -90,6 +91,7 @@ void MotorInterface::state_close_wait_for_ack_release(){
             // Error, invalid ack, too long or too short
             close_handle_nack();
             Serial.println("ERROR: Motor interface, state close_wait_release: Invalid acknowledgement time.");
+            errorLED.errCode(ackErrorClosing, 3);
         }
     }
     else if(_stateGreen.read()){
@@ -102,6 +104,7 @@ void MotorInterface::state_close_wait_for_ack_release(){
         // Error, LED did not turn back on in time
         close_handle_nack();
         Serial.println("ERROR: Motor interface, state close_wait_release: Timeout while waiting red LED to turn back on.");
+        errorLED.errCode(timeoutAckClosing, 3);
     }
 }
 
@@ -123,6 +126,7 @@ void MotorInterface::state_open_wait_for_ack_start(){
     else if(millis() > _t_ack + _timeout){ // Timeout, too much time between trigger and LED turning off
         open_handle_nack();
         Serial.println("ERROR: Motor interface, state open_wait_start: Timeout while waiting green LED to turn off.");
+        errorLED.errCode(timeoutAckOpening, 3);
     }
 }
 
@@ -141,12 +145,14 @@ void MotorInterface::state_open_wait_for_ack_release(){
             // Error, invalid ack, too long or too short
             open_handle_nack();
             Serial.println("ERROR: Motor interface, state open_wait_release: Invalid acknowledgement time.");
+            errorLED.errCode(ackErrorOpening, 3);
         }
     }
     else if(millis() > _t_ack + _timeout){
         // Error, LED did not turn back on in time
         open_handle_nack();
         Serial.println("ERROR: Motor interface, state open_wait_release: Timeout while waiting red LED to turn on.");
+        errorLED.errCode(timeoutAckOpening, 3);
     }
 }
 
@@ -240,4 +246,6 @@ void MotorInterface::reset(){
     // reset nack-counter and go back to idle state (SUCCESS)
     _nack_counter = 0;
     _state = MotorInterfaceState::SUCCESS;
+
+    errorLED.off();
 }

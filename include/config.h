@@ -22,7 +22,11 @@
 // Error codes
 extern LED errorLED;
 extern LED activeLED;
-const bool estopError[] = {0,0,0};
+const bool wallBlocked[]       = {0,0,0};
+const bool ackErrorClosing[]   = {0,0,1};
+const bool timeoutAckClosing[] = {0,1,0};
+const bool ackErrorOpening[]   = {0,1,1};
+const bool timeoutAckOpening[] = {1,0,0};
 
 
 #endif

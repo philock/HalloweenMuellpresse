@@ -27,6 +27,7 @@ void Wall::poll(){
         }
         else if(!_interface.isRed()){ // Wall was blocked, red led starts blinking
             Serial.println("ERROR: Wall is blocked");
+            errorLED.errCode(wallBlocked, 3);
             _state = WallState::ERROR;
         }
 
@@ -74,6 +75,7 @@ void Wall::open(){
     if(_state == WallState::ERROR){
         Serial.println("INFO: Wall open requested to leave error-state.");
         _interface.triggerRecover();
+        errorLED.off();
     }
     else{
         Serial.println("INFO: Wall open trigger.");
@@ -85,7 +87,7 @@ void Wall::open(){
 
 void Wall::close(){
     if(_state == WallState::ERROR){
-        Serial.println("ERROR: Wall cannot start closing while in error-state.");    
+        Serial.println("INFO: Wall cannot start closing while in error-state.");    
         return;
     } 
 
@@ -104,5 +106,6 @@ void Wall::reset(){
         _state = WallState::OPEN;
     }
 
+    errorLED.off();
     _interface.reset();
 }
