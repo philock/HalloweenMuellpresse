@@ -26,13 +26,23 @@ enum SequenceStates{
     wait_open
 };
 
+// Turn off all effects and drive wall open
 void resetSequence();
+
+// Run effect sequence
 void startSequence();
+
+// Called at end of sequence
 void endSequence();
 
+// Call continuously in main loop
 void stepSequence();
+
+// Handles state transitions to the next effect event
 void runFSM(unsigned long time);
 
 void configureMP3();
+
+void audioTest();
 
 #endif

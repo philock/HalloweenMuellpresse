@@ -46,7 +46,7 @@ void setup() {
     digitalWrite(PIN_FOG, HIGH);
 
     configureMP3();
-    
+
     Serial.begin(115200);
 
     activeLED.on();
@@ -73,4 +73,6 @@ void loop() {
     }
 
     stepSequence();
+
+    //audioTest();
 }

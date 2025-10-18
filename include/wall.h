@@ -32,6 +32,7 @@ class Wall{
         // Returns true when wall was blocked
         bool isError();
 
+        // Drives wall open
         void reset();
 
     private:

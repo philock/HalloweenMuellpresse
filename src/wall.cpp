@@ -105,6 +105,7 @@ void Wall::reset(){
         Serial.println("INFO: Wall: Reset to state open");
         _state = WallState::OPEN;
     } */
+   Serial.println("INFO: Wall: Reset to open state");
 
     errorLED.off();
     _interface.reset();

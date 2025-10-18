@@ -7,6 +7,7 @@ Wall wall;
 SequenceStates seqState;
 bool isRunning = false;
 unsigned long sequenceStartTime;
+bool isAlternativeSequence = false;
 
 void resetSequence(){
     isRunning = false;
@@ -25,7 +26,7 @@ void startSequence(){
     isRunning = true;
     sequenceStartTime = millis();
     seqState = SequenceStates::audio_on;
-    
+
     activeLED.blink();
 }
 
@@ -34,6 +35,7 @@ void endSequence(){
 
     // Initialize FSM state
     isRunning = false;
+    isAlternativeSequence = false;
     seqState = SequenceStates::idle;
 
     activeLED.on();
@@ -54,7 +56,7 @@ void runFSM(unsigned long time){
 
     case SequenceStates::audio_on:
         if(time > 500){
-            mp3.playStart();
+            mp3.playTrack(1);
             seqState = SequenceStates::wall_close;
         }
         break;
@@ -102,13 +104,42 @@ void runFSM(unsigned long time){
     default:
         break;
     }
+
+    // When wall gets blocked, play other sound
+    if(wall.isError() && !isAlternativeSequence){
+        Serial.println("INFO: Playing alternative sequence");
+        isAlternativeSequence = true;
+        mp3.playTrack(2);
+    }
 }
 
 void configureMP3(){
     mp3Serial.begin(MD_YX5300::SERIAL_BPS);
     mp3.begin();
     mp3.setSynchronous(true);
-    mp3.playFolderRepeat(1);
+    //mp3.playFolderRepeat(1);
     mp3.volume(mp3.volumeMax());
 
+}
+
+void audioTest(){
+    unsigned long playStartTime = millis();
+
+    //mp3.playStop();
+
+    Serial.println("DEBUG: Play sound 1");
+    //Serial.println(mp3.playSpecific(1, 1));
+
+    Serial.println(mp3.playTrack(1));
+
+    while(millis() < playStartTime + 10000){
+        mp3.check();
+    }
+
+    Serial.println("DEBUG: Play sound 2");
+    //Serial.println(mp3.playSpecific(1, 2));
+    Serial.println(mp3.playTrack(2));
+    while(millis() < playStartTime + 20000){
+        mp3.check();
+    }
 }
