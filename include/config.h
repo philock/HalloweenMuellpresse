@@ -3,6 +3,9 @@
 
 #include <led.h>
 
+// Sequence timing
+#define TRIG_DELAY 0
+
 // Pin definitions
 #define PIN_UART_RX    2 // Software serial for audio module
 #define PIN_UART_TX    3 // Software serial for audio module
@@ -12,7 +15,7 @@
 #define PIN_WALL_CLOSE 7 // Relais, to internal transponder
 #define PIN_MOTOR_STATE_GREEN 8 // JST-SM X3 connector
 #define PIN_MOTOR_STATE_RED   9 // JST-SM X3 connector
-#define PIN_TRIG      10 // JST-SM X2 connector
+#define PIN_TRIG      A0 // JST-SM X2 connector
 #define PIN_SWITCH_1  15 // UI on controller box
 #define PIN_SWITCH_2  16 // UI on controller box
 #define PIN_BUTTON    17 // UI on controller box

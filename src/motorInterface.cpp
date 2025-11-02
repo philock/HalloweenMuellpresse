@@ -58,7 +58,8 @@ void MotorInterface::state_close_trigger(){
     if(millis() > _t_trig_start + _trig_duration){
         digitalWrite(PIN_WALL_CLOSE, HIGH);
         _t_ack = millis();
-        _state = MotorInterfaceState::CLOSE_WAIT_FOR_ACK_START;
+        if(_unancknowledgedMode) _state = MotorInterfaceState::SUCCESS;
+        else                     _state = MotorInterfaceState::CLOSE_WAIT_FOR_ACK_START;
     }
 }
 
@@ -112,7 +113,8 @@ void MotorInterface::state_open_trigger(){
     if(millis() > _t_trig_start + _trig_duration){
         digitalWrite(PIN_WALL_OPEN, HIGH);
         _t_ack = millis();
-        _state = MotorInterfaceState::OPEN_WAIT_FOR_ACK_START;
+        if(_unancknowledgedMode) _state = MotorInterfaceState::SUCCESS;
+        else                     _state = MotorInterfaceState::OPEN_WAIT_FOR_ACK_START;
     }
 }
 
@@ -248,4 +250,8 @@ void MotorInterface::reset(){
     _state = MotorInterfaceState::SUCCESS;
 
     errorLED.off();
+}
+
+void MotorInterface::unancknowledgedMode(bool unack){
+    _unancknowledgedMode = unack;
 }

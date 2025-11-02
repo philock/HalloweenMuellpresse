@@ -1,8 +1,13 @@
 #include <wall.h>
 
 Wall::Wall(){
-    if(_interface.isRed()) _state = WallState::OPEN;
-    if(_interface.isGreen()) _state = WallState::CLOSED;
+    if(_useMotorFeedback){
+        if(_interface.isRed()) _state = WallState::OPEN;
+        if(_interface.isGreen()) _state = WallState::CLOSED;
+    }
+    else _state = WallState::OPEN;
+
+    _interface.unancknowledgedMode(false);
 }
 
 void Wall::poll(){
@@ -21,11 +26,11 @@ void Wall::poll(){
         break;
 
     case WallState::CLOSING:
-        if(_interface.isGreen() && millis() > _t_start + _drive_duration){
+        if((!_useMotorFeedback || _interface.isGreen()) && millis() > _t_start + _drive_duration){
             Serial.println("INFO: Wall closed");
             _state = WallState::CLOSED;
         }
-        else if(!_interface.isRed()){ // Wall was blocked, red led starts blinking
+        else if(!_interface.isRed() && _useMotorFeedback){ // Wall was blocked, red led starts blinking
             Serial.println("ERROR: Wall is blocked");
             errorLED.errCode(wallBlocked, 3);
             _state = WallState::ERROR;
@@ -47,7 +52,7 @@ void Wall::poll(){
         break;
 
     case WallState::OPENING:
-        if(_interface.isRed() && millis() > _t_start + _drive_duration){
+        if((_interface.isRed() || !_useMotorFeedback) && millis() > _t_start + _drive_duration){
             Serial.println("INFO: Wall opened");
             _state = WallState::OPEN;
         }

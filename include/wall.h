@@ -40,8 +40,10 @@ class Wall{
 
         WallState _state;
 
+        bool _useMotorFeedback = true;
+
         unsigned long _t_start;
-        const unsigned long _drive_duration = 10000; // Enter duration of a normal drive-cycle here
+        const unsigned long _drive_duration = 14000; // Enter duration of a normal drive-cycle here
 
 
 };

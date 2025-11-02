@@ -3,7 +3,7 @@
 #include <input.h>
 #include <eventSequence.h>
 
-Input trigger(PIN_TRIG, false, true);
+//Input trigger(PIN_TRIG, false, true);
 Input switch_1(PIN_SWITCH_1, false, true);
 Input switch_2(PIN_SWITCH_2, false, true);
 Input button(PIN_BUTTON, false, true);
@@ -27,14 +27,14 @@ void readSwitchState(){
         sysState = SystemState::STOP;
 
     }
-    else if(switch_state == 0b00 && sysState != SystemState::AUTO){ // middle position
-        Serial.println("INFO: System set to automatic operation");
-        sysState = SystemState::AUTO;
-
-    }
-    else if(switch_state == 0b01 && sysState != SystemState::MANUAL){ // right position
+    else if(switch_state == 0b00 && sysState != SystemState::MANUAL){ // middle position
         Serial.println("INFO: System set to manual operation");
         sysState = SystemState::MANUAL;
+
+    }
+    else if(switch_state == 0b01 && sysState != SystemState::AUTO){ // right position
+        Serial.println("INFO: System set to automatic operation");
+        sysState = SystemState::AUTO;
     }
 }
 
@@ -51,12 +51,23 @@ void setup() {
 
     activeLED.on();
     errorLED.off();
+
+    //trigger.setLongpressTime(1000);
+    //trigger.setDebounceTime(200);
+    pinMode(PIN_TRIG, INPUT);
 }
 
+
+int numTrigs = 0;
 void loop() {
     readSwitchState();
     errorLED.poll();
     activeLED.poll();
+
+    int val = analogRead(PIN_TRIG);
+    Serial.println(val);
+    if(val < 900) numTrigs ++;
+    else numTrigs = 0;
    
     switch(sysState){
     case SystemState::STOP:
@@ -64,7 +75,10 @@ void loop() {
         break;
 
     case SystemState::AUTO:
-        if(trigger.read() && !isRunning) startSequence();
+        if(numTrigs > 100 && !isRunning) {
+            startSequence();
+            numTrigs = 0;
+        }
         break;
 
     case SystemState::MANUAL:

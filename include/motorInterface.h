@@ -51,10 +51,14 @@ class MotorInterface{
         // Resets interface, stopping all trigger processes
         void reset();
 
+        // Do not use acknowledgements from the motor LEDs, only blind transmissions
+        void unancknowledgedMode(bool unack = false);
+
     private:
         const unsigned int _N_retry = 2; // Number of trigger retries
         const int _trig_duration = 200; // Duration of transmitter button press
         const int _timeout = 1000; // Timerout duration after trigger press
+        bool _unancknowledgedMode = false;
 
         MotorInterfaceState _state = MotorInterfaceState::SUCCESS;
 

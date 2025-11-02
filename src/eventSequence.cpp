@@ -18,6 +18,7 @@ void resetSequence(){
     digitalWrite(PIN_230V, HIGH);
     digitalWrite(PIN_FOG, HIGH);
     mp3.playStop();
+    activeLED.on();
 }
 
 void startSequence(){
@@ -25,7 +26,7 @@ void startSequence(){
 
     isRunning = true;
     sequenceStartTime = millis();
-    seqState = SequenceStates::audio_on;
+    seqState = SequenceStates::wall_close;
 
     activeLED.blink();
 }
@@ -41,6 +42,7 @@ void endSequence(){
     activeLED.on();
 }
 
+// Called on every loop
 void stepSequence(){
     mp3.check();
     wall.poll();
@@ -53,51 +55,66 @@ void runFSM(unsigned long time){
     case SequenceStates::idle:
         isRunning = false;
         break;
-
-    case SequenceStates::audio_on:
-        if(time > 500){
-            mp3.playTrack(1);
-            seqState = SequenceStates::wall_close;
+        
+    case SequenceStates::wall_close:
+        if(time > 10+TRIG_DELAY){
+            wall.close();
+            seqState = SequenceStates::audio_on;
         }
         break;
-    
-    case SequenceStates::wall_close:
-        if(time > 2000){
-            wall.close();
+
+    case SequenceStates::audio_on:
+        if(time > 10+TRIG_DELAY){
+            mp3.playTrack(2);
             digitalWrite(PIN_230V, LOW);
             seqState = SequenceStates::fog_on_1;
         }
         break;
+    
 
     case SequenceStates::fog_on_1:
-        if(time > 4000){
+        if(time > 2000+TRIG_DELAY){
             digitalWrite(PIN_FOG, LOW);
             seqState = SequenceStates::fog_off_1;
         }
         break;
 
     case SequenceStates::fog_off_1:
-        if(time > 5000){
+        if(time > 2500+TRIG_DELAY){
             digitalWrite(PIN_FOG, HIGH);
+            seqState = SequenceStates::fog_on_2;
+        }
+        break;
+
+    case SequenceStates::fog_on_2:
+        if(time > 14000+TRIG_DELAY){
+            //digitalWrite(PIN_FOG, LOW);
+            seqState = SequenceStates::fog_off_2;
+        }
+        break;
+
+    case SequenceStates::fog_off_2:
+        if(time > 14500+TRIG_DELAY){
+            //digitalWrite(PIN_FOG, HIGH);
             seqState = SequenceStates::light_off;
         }
         break;
 
     case SequenceStates::light_off:
-        if(time > 15000){
+        if(time > 18000+TRIG_DELAY){
             digitalWrite(PIN_230V, HIGH);
             seqState = SequenceStates::wall_open;
         }
         break;
         
     case SequenceStates::wall_open:
-        if(time > 25000){
+        if(time > 19000+TRIG_DELAY){
             wall.open();
             seqState = SequenceStates::wait_open;
         }
 
     case SequenceStates::wait_open:
-        if(time > 27000 && !wall.isRunning()){
+        if(time > 36000+TRIG_DELAY && !wall.isRunning()){
             endSequence();
         }
 
@@ -109,7 +126,7 @@ void runFSM(unsigned long time){
     if(wall.isError() && !isAlternativeSequence){
         Serial.println("INFO: Playing alternative sequence");
         isAlternativeSequence = true;
-        mp3.playTrack(2);
+        mp3.playTrack(1);
     }
 }
 

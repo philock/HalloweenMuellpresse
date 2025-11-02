@@ -19,6 +19,9 @@ enum SequenceStates{
     fog_on_1,
     fog_off_1,
 
+    fog_on_2,
+    fog_off_2,
+
     light_off,
 
     wall_open,
